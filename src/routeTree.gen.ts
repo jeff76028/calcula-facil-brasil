@@ -10,33 +10,89 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CategoriasIndexRouteImport } from './routes/categorias.index'
+import { Route as CategoriasSlugRouteImport } from './routes/categorias.$slug'
+import { Route as FerramentasIndexRouteImport } from './routes/ferramentas.index'
+import { Route as FerramentasSlugRouteImport } from './routes/ferramentas.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoriasIndexRoute = CategoriasIndexRouteImport.update({
+  id: '/categorias/',
+  path: '/categorias/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriasSlugRoute = CategoriasSlugRouteImport.update({
+  id: '/categorias/$slug',
+  path: '/categorias/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FerramentasIndexRoute = FerramentasIndexRouteImport.update({
+  id: '/ferramentas/',
+  path: '/ferramentas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FerramentasSlugRoute = FerramentasSlugRouteImport.update({
+  id: '/ferramentas/$slug',
+  path: '/ferramentas/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/categorias/$slug': typeof CategoriasSlugRoute
+  '/ferramentas/$slug': typeof FerramentasSlugRoute
+  '/categorias/': typeof CategoriasIndexRoute
+  '/ferramentas/': typeof FerramentasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/categorias/$slug': typeof CategoriasSlugRoute
+  '/ferramentas/$slug': typeof FerramentasSlugRoute
+  '/categorias': typeof CategoriasIndexRoute
+  '/ferramentas': typeof FerramentasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/categorias/$slug': typeof CategoriasSlugRoute
+  '/ferramentas/$slug': typeof FerramentasSlugRoute
+  '/categorias/': typeof CategoriasIndexRoute
+  '/ferramentas/': typeof FerramentasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/categorias/$slug'
+    | '/ferramentas/$slug'
+    | '/categorias/'
+    | '/ferramentas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/categorias/$slug'
+    | '/ferramentas/$slug'
+    | '/categorias'
+    | '/ferramentas'
+  id:
+    | '__root__'
+    | '/'
+    | '/categorias/$slug'
+    | '/ferramentas/$slug'
+    | '/categorias/'
+    | '/ferramentas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CategoriasSlugRoute: typeof CategoriasSlugRoute
+  FerramentasSlugRoute: typeof FerramentasSlugRoute
+  CategoriasIndexRoute: typeof CategoriasIndexRoute
+  FerramentasIndexRoute: typeof FerramentasIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +104,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categorias/': {
+      id: '/categorias/'
+      path: '/categorias'
+      fullPath: '/categorias/'
+      preLoaderRoute: typeof CategoriasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categorias/$slug': {
+      id: '/categorias/$slug'
+      path: '/categorias/$slug'
+      fullPath: '/categorias/$slug'
+      preLoaderRoute: typeof CategoriasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ferramentas/': {
+      id: '/ferramentas/'
+      path: '/ferramentas'
+      fullPath: '/ferramentas/'
+      preLoaderRoute: typeof FerramentasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ferramentas/$slug': {
+      id: '/ferramentas/$slug'
+      path: '/ferramentas/$slug'
+      fullPath: '/ferramentas/$slug'
+      preLoaderRoute: typeof FerramentasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CategoriasSlugRoute: CategoriasSlugRoute,
+  FerramentasSlugRoute: FerramentasSlugRoute,
+  CategoriasIndexRoute: CategoriasIndexRoute,
+  FerramentasIndexRoute: FerramentasIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
