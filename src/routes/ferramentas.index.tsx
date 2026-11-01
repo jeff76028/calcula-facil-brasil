@@ -7,8 +7,8 @@ import { searchTools, toolsByCategory } from "@/data/tools";
 import { pageHead, breadcrumbLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/ferramentas/")({
-  validateSearch: (s: Record<string, unknown>): { q?: string } => ({
-    q: typeof s.q === "string" && s.q ? s.q : undefined,
+  validateSearch: (s: Record<string, unknown>): { q?: string | undefined } => ({
+    q: typeof s["q"] === "string" && s["q"] ? (s["q"] as string) : undefined,
   }),
   head: () =>
     pageHead({
