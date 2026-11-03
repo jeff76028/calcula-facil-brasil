@@ -19,10 +19,10 @@ export interface Tool {
 }
 
 export const tools: Tool[] = [
-  { slug: "calculadora-de-porcentagem", name: "Calculadora de Porcentagem", category: "matematica", shortDescription: "Calcule porcentagens, aumentos e reduções percentuais.", keywords: ["porcentagem", "percentual", "%"], status: "em-breve", popular: true, addedOrder: 1 },
-  { slug: "regra-de-tres", name: "Regra de Três", category: "matematica", shortDescription: "Resolva regra de três simples de forma rápida.", keywords: ["proporção", "regra de 3"], status: "em-breve", popular: true, addedOrder: 2 },
-  { slug: "calculadora-de-media", name: "Calculadora de Média", category: "matematica", shortDescription: "Calcule a média de uma lista de números.", keywords: ["média", "nota", "média aritmética"], status: "em-breve", addedOrder: 3 },
-  { slug: "calculadora-de-desconto", name: "Calculadora de Desconto", category: "financas", shortDescription: "Descubra o preço final com desconto.", keywords: ["desconto", "promoção", "preço"], status: "em-breve", popular: true, addedOrder: 4 },
+  { slug: "calculadora-de-porcentagem", name: "Calculadora de Porcentagem", category: "matematica", shortDescription: "Calcule porcentagens, aumentos e reduções percentuais.", keywords: ["porcentagem", "percentual", "%"], status: "disponivel", popular: true, addedOrder: 1 },
+  { slug: "regra-de-tres", name: "Regra de Três", category: "matematica", shortDescription: "Resolva regra de três simples de forma rápida.", keywords: ["proporção", "regra de 3"], status: "disponivel", popular: true, addedOrder: 2 },
+  { slug: "calculadora-de-media", name: "Calculadora de Média", category: "matematica", shortDescription: "Calcule a média de uma lista de números.", keywords: ["média", "nota", "média aritmética"], status: "disponivel", addedOrder: 3 },
+  { slug: "calculadora-de-desconto", name: "Calculadora de Desconto", category: "financas", shortDescription: "Descubra o preço final com desconto.", keywords: ["desconto", "promoção", "preço"], status: "disponivel", popular: true, addedOrder: 4 },
   { slug: "calculadora-de-juros-compostos", name: "Calculadora de Juros Compostos", category: "financas", shortDescription: "Simule o crescimento de um valor com juros compostos.", keywords: ["juros", "investimento", "rendimento"], status: "em-breve", popular: true, addedOrder: 5 },
   { slug: "meta-de-economia", name: "Meta de Economia", category: "financas", shortDescription: "Planeje quanto guardar para atingir um objetivo.", keywords: ["poupar", "economizar", "objetivo"], status: "em-breve", addedOrder: 6 },
   { slug: "divisao-de-contas", name: "Divisão de Contas", category: "financas", shortDescription: "Divida a conta entre amigos de forma justa.", keywords: ["dividir conta", "rachar", "restaurante"], status: "em-breve", addedOrder: 7 },

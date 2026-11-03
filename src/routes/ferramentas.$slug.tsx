@@ -7,6 +7,7 @@ import { getTool, toolsByCategory } from "@/data/tools";
 import { getCategory } from "@/data/categories";
 import { pageHead, breadcrumbLd } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import { calculators } from "@/components/calculators/registry";
 
 export const Route = createFileRoute("/ferramentas/$slug")({
   loader: ({ params }) => {
@@ -56,6 +57,7 @@ function ToolPage() {
   const { tool, category } = Route.useLoaderData();
   const Icon = categoryIcons[category.slug];
   const related = toolsByCategory(category.slug).filter((t) => t.slug !== tool.slug);
+  const calc = calculators[tool.slug];
 
   return (
     <div className="container-site py-8 sm:py-10">
@@ -80,9 +82,11 @@ function ToolPage() {
           </header>
 
           {/* Calculator area — each tool's widget plugs in here in the next phase */}
-          <section aria-labelledby="calc-title" className="mt-8 rounded-3xl border border-border bg-card p-6 shadow-card sm:p-8">
+          <section aria-labelledby="calc-title" className="mt-8 rounded-3xl border border-border bg-card p-5 shadow-card sm:p-8">
             <h2 id="calc-title" className="sr-only">Calculadora</h2>
-            {tool.status === "em-breve" ? (
+            {calc ? (
+              <calc.Component />
+            ) : (
               <div className="flex flex-col items-center py-8 text-center">
                 <span className="grid h-12 w-12 place-items-center rounded-full bg-accent-soft text-accent-foreground">
                   <Wrench className="h-6 w-6" aria-hidden />
@@ -92,7 +96,7 @@ function ToolPage() {
                   Em breve você poderá usar a {tool.name.toLowerCase()} gratuitamente aqui. Enquanto isso, explore outras ferramentas.
                 </p>
               </div>
-            ) : null}
+            )}
             <p className="mt-4 flex items-center justify-center gap-2 border-t border-border pt-4 text-xs text-muted-foreground">
               <Lock className="h-3.5 w-3.5" aria-hidden /> Os valores digitados não são enviados nem armazenados.
             </p>
@@ -100,14 +104,31 @@ function ToolPage() {
 
           <AdSlot slot="conteudo" />
 
-          {/* Explanatory content (como usar, fórmula, exemplos, perguntas frequentes) is added per tool with its calculator. */}
           <section className="prose-site mt-10">
             <h2>Sobre a {tool.name.toLowerCase()}</h2>
             <p>
               {tool.shortDescription} A ferramenta faz parte da categoria{" "}
               <Link to="/categorias/$slug" params={{ slug: category.slug }}>{category.name}</Link> do Calcula Fácil.
             </p>
+            {calc && (
+              <>
+                <h2>Como usar</h2>
+                <ol>{calc.howTo.map((s) => <li key={s}>{s}</li>)}</ol>
+                <h2>Como o cálculo é feito</h2>
+                <ul>{calc.formula.map((s) => <li key={s}>{s}</li>)}</ul>
+                <h2>Exemplo de uso</h2>
+                <p>{calc.example}</p>
+                <h2>Perguntas frequentes</h2>
+                {calc.faq.map((f) => (
+                  <div key={f.q}>
+                    <h3>{f.q}</h3>
+                    <p>{f.a}</p>
+                  </div>
+                ))}
+              </>
+            )}
           </section>
+
         </article>
 
         <aside className="space-y-6">
