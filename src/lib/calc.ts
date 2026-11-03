@@ -55,7 +55,7 @@ export function ruleOfThree(v: Partial<Record<R3Key, number>>): { ok: true; key:
   const { a, b, c, d } = v as Record<R3Key, number>;
   const [num, den] = key === "a" ? [b * c, d] : key === "b" ? [a * d, c] : key === "c" ? [a * d, b] : [b * c, a];
   if (den === 0) return { ok: false, error: "Não é possível dividir por zero. Revise os valores informados." };
-  return { ok: true, key, value: num / den };
+  return { ok: true, key: key as R3Key, value: num / den };
 }
 
 // Desconto
