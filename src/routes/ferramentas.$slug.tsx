@@ -16,7 +16,7 @@ export const Route = createFileRoute("/ferramentas/$slug")({
     return { tool, category: getCategory(tool.category)! };
   },
   head: ({ loaderData, params }) => {
-    if (!loaderData) return { meta: [{ title: "Ferramenta não encontrada | Calcula Fácil" }, { name: "robots", content: "noindex" }] };
+    if (!loaderData) return { meta: [{ title: "Ferramenta não encontrada | Conta Gênio" }, { name: "robots", content: "noindex" }] };
     const { tool, category } = loaderData;
     const path = `/ferramentas/${params.slug}`;
     const c = calculators[tool.slug];
@@ -109,7 +109,7 @@ function ToolPage() {
             <h2>Sobre a {tool.name.toLowerCase()}</h2>
             <p>
               {tool.shortDescription} A ferramenta faz parte da categoria{" "}
-              <Link to="/categorias/$slug" params={{ slug: category.slug }}>{category.name}</Link> do Calcula Fácil.
+              <Link to="/categorias/$slug" params={{ slug: category.slug }}>{category.name}</Link> do Conta Gênio.
             </p>
             {calc?.intro && <p>{calc.intro}</p>}
             {calc && (

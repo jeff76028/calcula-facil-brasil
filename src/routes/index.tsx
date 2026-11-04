@@ -11,7 +11,7 @@ import { pageHead } from "@/lib/seo";
 export const Route = createFileRoute("/")({
   head: () =>
     pageHead({
-      title: "Calcula Fácil — Calculadoras e ferramentas online grátis",
+      title: "Conta Gênio — Calculadoras e ferramentas online grátis",
       description:
         "Calculadoras gratuitas de porcentagem, juros, área, datas, texto e muito mais. Sem cadastro, rápidas e com cálculos feitos no seu navegador.",
       path: "/",

@@ -13,7 +13,7 @@ export const Route = createFileRoute("/ferramentas/")({
   head: () =>
     pageHead({
       title: "Todas as ferramentas e calculadoras online",
-      description: "Lista completa de calculadoras e ferramentas gratuitas do Calcula Fácil, organizadas por categoria.",
+      description: "Lista completa de calculadoras e ferramentas gratuitas do Conta Gênio, organizadas por categoria.",
       path: "/ferramentas",
       jsonLd: [breadcrumbLd([{ name: "Início", path: "/" }, { name: "Ferramentas", path: "/ferramentas" }])],
     }),
