@@ -4,46 +4,91 @@ import { Button } from "@/components/ui/button";
 import { NumField, Actions, ErrorBox, Results, ModeSwitch } from "./shared";
 import {
   parseNumber, formatNumber, formatBRL, formatPercent,
-  percentage, ruleOfThree, discountFromPercent, percentFromFinal, average, type R3Key,
+  percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average, type R3Key,
 } from "@/lib/calc";
 
 type Res = { items: { label: string; value: string; highlight?: boolean }[]; explanation?: React.ReactNode } | null;
 
 /* ---------- Porcentagem ---------- */
+type PctMode = "parte" | "aumento" | "desconto" | "variacao";
 export function PercentageCalculator() {
+  const [mode, setMode] = useState<PctMode>("parte");
   const [value, setValue] = useState("");
   const [pct, setPct] = useState("");
-  const [fmt, setFmt] = useState<"numero" | "reais">("numero");
   const [errors, setErrors] = useState<string[]>([]);
   const [res, setRes] = useState<Res>(null);
+  const isVar = mode === "variacao";
+  const money = mode === "aumento" || mode === "desconto";
+  const f = money ? formatBRL : (n: number) => formatNumber(n, 4);
+
+  function changeMode(m: PctMode) { setMode(m); setErrors([]); setRes(null); }
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    const a = parseNumber(value, "O valor");
-    const b = parseNumber(pct, "O percentual");
+    const a = parseNumber(value, isVar ? "O valor inicial" : money ? "O valor original" : "O valor");
+    const b = parseNumber(pct, isVar ? "O valor final" : "O percentual");
     const errs = [a, b].flatMap((r) => (r.ok ? [] : [r.error]));
-    setErrors(errs);
-    if (!a.ok || !b.ok) return setRes(null);
-    const f = fmt === "reais" ? formatBRL : (n: number) => formatNumber(n, 4);
-    const r = percentage(a.value, b.value);
+    if (!a.ok || !b.ok) { setErrors(errs); return setRes(null); }
+    setErrors([]);
+    const A = a.value, B = b.value;
+    if (isVar) {
+      const r = percentChange(A, B);
+      if (!r) { setErrors(["O valor inicial não pode ser zero: não é possível calcular a variação a partir de zero (divisão por zero)."]); return setRes(null); }
+      const word = r.pct > 0 ? "Aumento" : r.pct < 0 ? "Redução" : "Sem variação";
+      return setRes({
+        items: [
+          { label: "Variação percentual", value: `${r.pct > 0 ? "+" : ""}${formatNumber(r.pct, 4)}%`, highlight: true },
+          { label: "Tipo de variação", value: word },
+          { label: "Diferença", value: formatNumber(r.diff, 4) },
+        ],
+        explanation: <>Cálculo: ({f(B)} − {f(A)}) ÷ {f(Math.abs(A))} × 100 = {formatNumber(r.pct, 4)}%.</>,
+      });
+    }
+    const r = percentage(A, B);
+    if (mode === "parte") return setRes({
+      items: [{ label: `${formatPercent(B)} de ${f(A)}`, value: f(r.part), highlight: true }],
+      explanation: <>Cálculo: {f(A)} × {formatNumber(B, 4)} ÷ 100 = {f(r.part)}.</>,
+    });
+    if (mode === "aumento") return setRes({
+      items: [
+        { label: `Valor com aumento de ${formatPercent(B)}`, value: f(r.increased), highlight: true },
+        { label: "Valor do aumento", value: f(r.part) },
+        { label: "Valor original", value: f(A) },
+      ],
+      explanation: <>Aumento: {f(A)} × {formatNumber(B, 4)} ÷ 100 = {f(r.part)}. Valor final: {f(A)} + {f(r.part)} = {f(r.increased)}.</>,
+    });
     setRes({
       items: [
-        { label: `${formatPercent(b.value)} de ${f(a.value)}`, value: f(r.part), highlight: true },
-        { label: `Com aumento de ${formatPercent(b.value)}`, value: f(r.increased) },
-        { label: `Com redução de ${formatPercent(b.value)}`, value: f(r.decreased) },
+        { label: `Valor com desconto de ${formatPercent(B)}`, value: f(r.decreased), highlight: true },
+        { label: "Valor do desconto", value: f(r.part) },
+        { label: "Valor original", value: f(A) },
       ],
-      explanation: <>Cálculo: {f(a.value)} × {formatNumber(b.value, 4)} ÷ 100 = {f(r.part)}. Aumento: {f(a.value)} + {f(r.part)}. Redução: {f(a.value)} − {f(r.part)}.</>,
+      explanation: <>Desconto: {f(A)} × {formatNumber(B, 4)} ÷ 100 = {f(r.part)}. Valor final: {f(A)} − {f(r.part)} = {f(r.decreased)}.</>,
     });
   }
   const clear = () => { setValue(""); setPct(""); setErrors([]); setRes(null); };
 
   return (
     <form onSubmit={submit} noValidate className="space-y-5">
-      <ModeSwitch label="Formato do resultado" value={fmt} onChange={setFmt}
-        options={[{ value: "numero", label: "Número" }, { value: "reais", label: "Valor em reais (R$)" }]} />
+      <ModeSwitch label="Tipo de cálculo" value={mode} onChange={changeMode}
+        options={[
+          { value: "parte", label: "X% de um valor" },
+          { value: "aumento", label: "Aumento" },
+          { value: "desconto", label: "Desconto" },
+          { value: "variacao", label: "Variação" },
+        ]} />
       <div className="grid gap-4 sm:grid-cols-2">
-        <NumField id="pct-valor" label="Valor" value={value} onChange={setValue} placeholder="Ex.: 250,00" />
-        <NumField id="pct-perc" label="Percentual" value={pct} onChange={setPct} placeholder="Ex.: 15" suffix="%" />
+        {isVar ? (
+          <>
+            <NumField id="pct-valor" label="Valor inicial" value={value} onChange={setValue} placeholder="Ex.: 200" />
+            <NumField id="pct-perc" label="Valor final" value={pct} onChange={setPct} placeholder="Ex.: 230" />
+          </>
+        ) : (
+          <>
+            <NumField id="pct-valor" label={money ? "Valor original (R$)" : "Valor"} value={value} onChange={setValue} placeholder="Ex.: 200" />
+            <NumField id="pct-perc" label={mode === "aumento" ? "Percentual de aumento" : mode === "desconto" ? "Percentual de desconto" : "Percentual"} value={pct} onChange={setPct} placeholder="Ex.: 15" suffix="%" />
+          </>
+        )}
       </div>
       <Actions onClear={clear} />
       <ErrorBox errors={errors} />

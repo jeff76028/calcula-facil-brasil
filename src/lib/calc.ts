@@ -45,6 +45,13 @@ export function percentage(value: number, pct: number) {
   return { part, increased: value + part, decreased: value - part };
 }
 
+// Variação percentual entre dois valores. Retorna null se o valor inicial for zero.
+export function percentChange(initial: number, final: number) {
+  if (initial === 0) return null;
+  const diff = final - initial;
+  return { diff, pct: (diff / Math.abs(initial)) * 100 };
+}
+
 // Regra de três simples direta: A/B = C/D  ⇒  A·D = B·C
 export type R3Key = "a" | "b" | "c" | "d";
 export function ruleOfThree(v: Partial<Record<R3Key, number>>): { ok: true; key: R3Key; value: number } | { ok: false; error: string } {

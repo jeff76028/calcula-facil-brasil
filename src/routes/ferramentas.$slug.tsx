@@ -19,9 +19,10 @@ export const Route = createFileRoute("/ferramentas/$slug")({
     if (!loaderData) return { meta: [{ title: "Ferramenta não encontrada | Calcula Fácil" }, { name: "robots", content: "noindex" }] };
     const { tool, category } = loaderData;
     const path = `/ferramentas/${params.slug}`;
+    const c = calculators[tool.slug];
     return pageHead({
-      title: `${tool.name} online grátis`,
-      description: `${tool.shortDescription} Ferramenta gratuita, sem cadastro, com cálculo feito no navegador.`,
+      title: c?.seoTitle ?? `${tool.name} online grátis`,
+      description: c?.seoDescription ?? `${tool.shortDescription} Ferramenta gratuita, sem cadastro, com cálculo feito no navegador.`,
       path,
       // Template pages stay out of the index until the calculator is implemented.
       noindex: tool.status !== "disponivel",
@@ -110,6 +111,7 @@ function ToolPage() {
               {tool.shortDescription} A ferramenta faz parte da categoria{" "}
               <Link to="/categorias/$slug" params={{ slug: category.slug }}>{category.name}</Link> do Calcula Fácil.
             </p>
+            {calc?.intro && <p>{calc.intro}</p>}
             {calc && (
               <>
                 <h2>Como usar</h2>
