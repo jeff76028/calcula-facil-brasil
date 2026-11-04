@@ -23,9 +23,9 @@ export function NumField({ id, label, value, onChange, placeholder, suffix, hint
 
 export function Actions({ onClear }: { onClear: () => void }) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row">
-      <Button type="submit" size="lg" className="h-12 flex-1 text-base font-bold">Calcular</Button>
-      <Button type="button" size="lg" variant="outline" className="h-12 text-base" onClick={onClear}>Limpar</Button>
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <Button type="submit" size="lg" className="h-14 w-full text-lg font-bold">Calcular</Button>
+      <Button type="button" size="lg" variant="outline" className="h-14 w-full text-lg" onClick={onClear}>Limpar</Button>
     </div>
   );
 }
