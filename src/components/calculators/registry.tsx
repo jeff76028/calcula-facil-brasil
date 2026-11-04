@@ -3,6 +3,9 @@ import { PercentageCalculator, RuleOfThreeCalculator, DiscountCalculator, Averag
 
 export interface ToolContent {
   Component: ComponentType;
+  seoTitle?: string;
+  seoDescription?: string;
+  intro?: string;
   howTo: string[];
   formula: string[];
   example: string;
@@ -12,11 +15,16 @@ export interface ToolContent {
 export const calculators: Record<string, ToolContent> = {
   "calculadora-de-porcentagem": {
     Component: PercentageCalculator,
-    howTo: ["Digite o valor base.", "Digite o percentual (ex.: 15 para 15%).", "Escolha se o resultado deve aparecer como número ou em reais.", "Clique em Calcular."],
-    formula: ["Porcentagem do valor = valor × percentual ÷ 100", "Valor com aumento = valor + (valor × percentual ÷ 100)", "Valor com redução = valor − (valor × percentual ÷ 100)"],
-    example: "15% de R$ 200,00 é R$ 30,00 (200 × 15 ÷ 100). Com aumento de 15%, o valor vai para R$ 230,00; com redução de 15%, fica em R$ 170,00.",
+    seoTitle: "Calculadora de Porcentagem Online Grátis",
+    seoDescription: "Calcule X% de um valor, aumento, desconto e variação percentual entre dois valores. Grátis, sem cadastro e com cálculo no navegador.",
+    intro: "Porcentagem aparece o tempo todo: no reajuste do aluguel, na promoção da loja, na comissão de vendas ou na comparação de preços de um mês para o outro. Esta calculadora reúne os quatro cálculos mais comuns em um só lugar. Escolha o tipo de cálculo, informe os números e veja o resultado junto com a conta passo a passo.",
+    howTo: ["Escolha o tipo de cálculo: X% de um valor, Aumento, Desconto ou Variação.", "Preencha os dois campos. Vírgula ou ponto podem ser usados como separador decimal.", "Clique em Calcular para ver o resultado e a explicação.", "Use Limpar para começar um novo cálculo."],
+    formula: ["X% de um valor = valor × X ÷ 100", "Valor com aumento = valor + (valor × X ÷ 100)", "Valor com desconto = valor − (valor × X ÷ 100)", "Variação percentual = (valor final − valor inicial) ÷ valor inicial × 100"],
+    example: "Quanto é 15% de 200? 200 × 15 ÷ 100 = 30. Um valor de R$ 200,00 com aumento de 15% passa a R$ 230,00; um produto de R$ 200,00 com desconto de 15% sai por R$ 170,00. Se um preço foi de R$ 200,00 para R$ 230,00, a variação foi de +15%.",
     faq: [
       { q: "Como calcular 10% de um valor?", a: "Multiplique o valor por 10 e divida por 100. Por exemplo, 10% de 350 é 35." },
+      { q: "Como saber quantos por cento um valor aumentou?", a: "Use a aba Variação: subtraia o valor inicial do final, divida pelo inicial e multiplique por 100. De 50 para 60, a variação é de 20%." },
+      { q: "Por que não dá para calcular a variação a partir de zero?", a: "A fórmula divide pelo valor inicial. Como não existe divisão por zero, a variação percentual a partir de zero não é definida." },
       { q: "Um aumento de 10% seguido de uma redução de 10% volta ao valor original?", a: "Não. 100 com aumento de 10% vira 110; 110 com redução de 10% vira 99." },
       { q: "Posso usar vírgula ou ponto?", a: "Sim. Os dois são aceitos como separador decimal, por exemplo 12,5 ou 12.5." },
     ],

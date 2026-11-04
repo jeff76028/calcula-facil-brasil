@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseNumber, percentage, ruleOfThree, discountFromPercent, percentFromFinal, average } from "@/lib/calc";
+import { parseNumber, percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average } from "@/lib/calc";
 
 const v = (s: string) => {
   const r = parseNumber(s);
@@ -25,6 +25,11 @@ describe("parseNumber", () => {
 describe("calculators", () => {
   it("percentage of 200 at 15%", () => {
     expect(percentage(200, 15)).toEqual({ part: 30, increased: 230, decreased: 170 });
+  });
+  it("percent change", () => {
+    expect(percentChange(200, 230)).toEqual({ diff: 30, pct: 15 });
+    expect(percentChange(200, 170)).toEqual({ diff: -30, pct: -15 });
+    expect(percentChange(0, 50)).toBeNull();
   });
   it("rule of three finds each unknown", () => {
     expect(ruleOfThree({ a: 2, b: 10, c: 5 })).toEqual({ ok: true, key: "d", value: 25 });
