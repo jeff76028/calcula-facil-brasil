@@ -12,7 +12,7 @@ export const Route = createFileRoute("/blog/$slug")({
     return { article };
   },
   head: ({ loaderData, params }) => {
-    if (!loaderData) return { meta: [{ title: "Artigo indisponível | Calcula Fácil" }, { name: "robots", content: "noindex" }] };
+    if (!loaderData) return { meta: [{ title: "Artigo indisponível | Conta Gênio" }, { name: "robots", content: "noindex" }] };
     const { article } = loaderData;
     const path = `/blog/${params.slug}`;
     return pageHead({

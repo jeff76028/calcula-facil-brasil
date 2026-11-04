@@ -1,4 +1,4 @@
-export const SITE_NAME = "Calcula Fácil";
+export const SITE_NAME = "Conta Gênio";
 
 interface PageHeadInput {
   title: string;

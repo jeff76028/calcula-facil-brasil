@@ -12,7 +12,7 @@ export const Route = createFileRoute("/categorias/$slug")({
     return { category };
   },
   head: ({ loaderData, params }) => {
-    if (!loaderData) return { meta: [{ title: "Categoria não encontrada | Calcula Fácil" }, { name: "robots", content: "noindex" }] };
+    if (!loaderData) return { meta: [{ title: "Categoria não encontrada | Conta Gênio" }, { name: "robots", content: "noindex" }] };
     const { category } = loaderData;
     const path = `/categorias/${params.slug}`;
     const items = toolsByCategory(category.slug);

@@ -80,9 +80,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Calcula Fácil — Calculadoras e ferramentas online grátis" },
+      { title: "Conta Gênio — Calculadoras e ferramentas online grátis" },
       { name: "description", content: "Calculadoras e ferramentas online gratuitas, sem cadastro." },
-      { property: "og:site_name", content: "Calcula Fácil" },
+      { property: "og:site_name", content: "Conta Gênio" },
       { property: "og:locale", content: "pt_BR" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -104,7 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
-          name: "Calcula Fácil",
+          name: "Conta Gênio",
           inLanguage: "pt-BR",
         }),
       },

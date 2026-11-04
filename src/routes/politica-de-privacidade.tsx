@@ -3,7 +3,7 @@ import { StaticPage } from "@/components/site/StaticPage";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/politica-de-privacidade")({
-  head: () => pageHead({ title: "Política de Privacidade", description: "Como o Calcula Fácil trata seus dados, em conformidade com a LGPD.", path: "/politica-de-privacidade" }),
+  head: () => pageHead({ title: "Política de Privacidade", description: "Como o Conta Gênio trata seus dados, em conformidade com a LGPD.", path: "/politica-de-privacidade" }),
   component: () => (
     <StaticPage title="Política de Privacidade">
       <h2>Dados digitados nas ferramentas</h2>

@@ -8,7 +8,7 @@ export function SiteFooter() {
       <div className="container-site grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <p className="font-display text-xl font-extrabold">
-            Calcula<span className="text-accent">Fácil</span>
+            Conta<span className="text-accent">Gênio</span>
           </p>
           <p className="mt-3 text-sm opacity-75">
             Calculadoras e ferramentas gratuitas, sem cadastro. Os cálculos acontecem no seu navegador.
@@ -52,7 +52,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-ink-foreground/10">
         <p className="container-site py-5 text-xs opacity-60">
-          © {new Date().getFullYear()} Calcula Fácil. Os resultados são estimativas e não substituem orientação profissional.
+          © {new Date().getFullYear()} Conta Gênio. Os resultados são estimativas e não substituem orientação profissional.
         </p>
       </div>
     </footer>
