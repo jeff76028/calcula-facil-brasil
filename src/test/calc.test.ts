@@ -35,6 +35,9 @@ describe("calculators", () => {
     expect(ruleOfThree({ a: 2, b: 10, c: 5 })).toEqual({ ok: true, key: "d", value: 25 });
     expect(ruleOfThree({ b: 10, c: 5, d: 25 })).toEqual({ ok: true, key: "a", value: 2 });
     expect(ruleOfThree({ a: 0, b: 10, c: 5 }).ok).toBe(false);
+    expect(ruleOfThree({ a: 2, b: 20, c: 5 })).toMatchObject({ value: 50 });
+    expect(ruleOfThree({ a: 4, b: 12, c: 6 })).toMatchObject({ value: 18 });
+    expect(ruleOfThree({ a: 10, b: 100, c: 3 })).toMatchObject({ value: 30 });
     expect(ruleOfThree({ a: 1, b: 2 }).ok).toBe(false);
   });
   it("discount both ways", () => {
