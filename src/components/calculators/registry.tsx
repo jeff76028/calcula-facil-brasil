@@ -31,13 +31,18 @@ export const calculators: Record<string, ToolContent> = {
   },
   "regra-de-tres": {
     Component: RuleOfThreeCalculator,
-    howTo: ["Informe os três valores conhecidos nos campos A, B, C ou D.", "Deixe vazio o campo que deseja descobrir.", "Clique em Calcular."],
-    formula: ["Proporção direta: A ÷ B = C ÷ D", "Multiplicação cruzada: A × D = B × C", "Ex.: D = (B × C) ÷ A"],
-    example: "Se 2 kg de arroz custam R$ 10, quanto custam 5 kg? A = 2, B = 10, C = 5. D = (10 × 5) ÷ 2 = 25, ou seja, R$ 25.",
+    seoTitle: "Calculadora de Regra de Três Online Grátis",
+    seoDescription: "Resolva regra de três simples direta: informe A, B e C e descubra X com a fórmula e o cálculo passo a passo. Grátis e sem cadastro.",
+    intro: "A regra de três simples é um método para descobrir um valor desconhecido quando duas grandezas são diretamente proporcionais, ou seja, quando uma aumenta, a outra aumenta na mesma proporção. É usada para calcular preços, receitas, consumo de combustível, conversões e muitas situações do dia a dia.",
+    howTo: ["Informe em A e B os dois valores que você já conhece e que se relacionam (ex.: 2 produtos = R$ 20).", "Informe em C o novo valor da mesma grandeza de A (ex.: 5 produtos).", "Clique em Calcular para ver X, a fórmula e o passo a passo.", "Use Limpar para começar de novo. Vírgula ou ponto podem ser usados como separador decimal."],
+    formula: ["Proporção direta: A está para B assim como C está para X (A ÷ B = C ÷ X)", "Multiplicação cruzada: A × X = B × C", "Isolando X: X = (B × C) ÷ A", "A não pode ser zero, porque não existe divisão por zero."],
+    example: "Se 2 produtos custam R$ 20, quanto custam 5 produtos? A = 2, B = 20, C = 5. X = (20 × 5) ÷ 2 = 100 ÷ 2 = 50, ou seja, R$ 50. Outro exemplo: se 4 litros rendem 12 copos, 6 litros rendem X = (12 × 6) ÷ 4 = 18 copos. E se 10 kg custam R$ 100, 3 kg custam X = (100 × 3) ÷ 10 = R$ 30.",
     faq: [
       { q: "O que é regra de três simples direta?", a: "É um método para encontrar um valor desconhecido quando duas grandezas aumentam ou diminuem na mesma proporção." },
-      { q: "E quando as grandezas são inversamente proporcionais?", a: "Esta calculadora resolve a regra de três direta. Na inversa (ex.: mais operários, menos dias), a fórmula muda e o resultado seria diferente." },
-      { q: "Por que aparece erro de divisão por zero?", a: "Se o valor que fica no divisor da fórmula for zero, o cálculo não tem resultado. Revise os valores informados." },
+      { q: "Como saber se devo usar regra de três direta?", a: "Pergunte-se: se uma grandeza dobrar, a outra também dobra? Se sim, as grandezas são diretamente proporcionais e esta calculadora serve." },
+      { q: "E quando as grandezas são inversamente proporcionais?", a: "Esta calculadora resolve apenas a regra de três direta. Na inversa (ex.: mais operários, menos dias), a fórmula é diferente." },
+      { q: "Por que A não pode ser zero?", a: "Porque A fica no divisor da fórmula X = (B × C) ÷ A, e não existe divisão por zero." },
+      { q: "Posso usar números decimais?", a: "Sim. Use vírgula ou ponto, por exemplo 2,5 ou 2.5." },
     ],
   },
   "calculadora-de-desconto": {
