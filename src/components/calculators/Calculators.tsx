@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { NumField, Actions, ErrorBox, Results, ModeSwitch } from "./shared";
 import {
   parseNumber, formatNumber, formatBRL, formatPercent,
-  percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average, type R3Key,
+  percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average,
 } from "@/lib/calc";
 
 type Res = { items: { label: string; value: string; highlight?: boolean }[]; explanation?: React.ReactNode } | null;
@@ -98,56 +98,54 @@ export function PercentageCalculator() {
 }
 
 /* ---------- Regra de três ---------- */
-const R3_LABELS: Record<R3Key, string> = { a: "A", b: "B", c: "C", d: "X (D)" };
+type R3In = "a" | "b" | "c";
 export function RuleOfThreeCalculator() {
-  const [vals, setVals] = useState<Record<R3Key, string>>({ a: "", b: "", c: "", d: "" });
+  const [vals, setVals] = useState<Record<R3In, string>>({ a: "", b: "", c: "" });
   const [errors, setErrors] = useState<string[]>([]);
   const [res, setRes] = useState<Res>(null);
-  const set = (k: R3Key) => (v: string) => setVals((s) => ({ ...s, [k]: v }));
+  const [x, setX] = useState("");
+  const set = (k: R3In) => (v: string) => setVals((s) => ({ ...s, [k]: v }));
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    const nums: Partial<Record<R3Key, number>> = {};
-    const errs: string[] = [];
-    (Object.keys(vals) as R3Key[]).forEach((k) => {
-      if (!vals[k].trim()) return;
-      const p = parseNumber(vals[k], `O campo ${R3_LABELS[k]}`);
-      if (p.ok) nums[k] = p.value; else errs.push(p.error);
-    });
-    if (errs.length) { setErrors(errs); return setRes(null); }
-    const r = ruleOfThree(nums);
-    if (!r.ok) { setErrors([r.error]); return setRes(null); }
+    const parsed = (["a", "b", "c"] as R3In[]).map((k) => parseNumber(vals[k], `O campo ${k.toUpperCase()}`));
+    const errs = parsed.flatMap((r) => (r.ok ? [] : [r.error]));
+    if (errs.length) { setErrors(errs); setX(""); return setRes(null); }
+    const [a, b, c] = parsed.map((r) => (r.ok ? r.value : 0));
+    const r = ruleOfThree({ a, b, c });
+    if (!r.ok) { setErrors(["O campo A não pode ser zero, pois não é possível dividir por zero."]); setX(""); return setRes(null); }
     setErrors([]);
-    const all = { ...nums, [r.key]: r.value } as Record<R3Key, number>;
-    const n = (k: R3Key) => formatNumber(all[k], 6);
-    const formula: Record<R3Key, string> = {
-      a: `A = (B × C) ÷ D = (${n("b")} × ${n("c")}) ÷ ${n("d")}`,
-      b: `B = (A × D) ÷ C = (${n("a")} × ${n("d")}) ÷ ${n("c")}`,
-      c: `C = (A × D) ÷ B = (${n("a")} × ${n("d")}) ÷ ${n("b")}`,
-      d: `D = (B × C) ÷ A = (${n("b")} × ${n("c")}) ÷ ${n("a")}`,
-    };
+    const n = (v: number) => formatNumber(v, 6);
+    setX(n(r.value));
     setRes({
-      items: [{ label: `Valor encontrado para ${R3_LABELS[r.key]}`, value: formatNumber(r.value, 6), highlight: true }],
+      items: [{ label: "Valor de X", value: n(r.value), highlight: true }],
       explanation: (
-        <>
-          <p>Proporção: {n("a")} está para {n("b")} assim como {n("c")} está para {n("d")}.</p>
-          <p className="mt-1">Fórmula (multiplicação cruzada, A × D = B × C): {formula[r.key]} = <strong>{formatNumber(r.value, 6)}</strong>.</p>
-        </>
+        <ol className="list-decimal space-y-1 pl-5">
+          <li>Fórmula: X = (B × C) ÷ A</li>
+          <li>Substituindo: X = ({n(b)} × {n(c)}) ÷ {n(a)}</li>
+          <li>Multiplicando: X = {n(b * c)} ÷ {n(a)}</li>
+          <li>Resultado: <strong>X = {n(r.value)}</strong></li>
+        </ol>
       ),
     });
   }
-  const clear = () => { setVals({ a: "", b: "", c: "", d: "" }); setErrors([]); setRes(null); };
+  const clear = () => { setVals({ a: "", b: "", c: "" }); setX(""); setErrors([]); setRes(null); };
+  const eq = <span aria-hidden className="pb-3 text-center font-display text-2xl font-bold text-primary">=</span>;
 
   return (
     <form onSubmit={submit} noValidate className="space-y-5">
-      <p className="text-sm text-muted-foreground">Preencha três campos e deixe <strong>vazio</strong> o valor que deseja descobrir.</p>
+      <p className="text-sm text-muted-foreground">Informe A, B e C. A calculadora encontra o valor de <strong>X</strong>.</p>
       <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-3">
         <NumField id="r3-a" label="A" value={vals.a} onChange={set("a")} placeholder="Ex.: 2" />
-        <span className="pb-3 text-sm text-muted-foreground">está para</span>
-        <NumField id="r3-b" label="B" value={vals.b} onChange={set("b")} placeholder="Ex.: 10" />
+        {eq}
+        <NumField id="r3-b" label="B" value={vals.b} onChange={set("b")} placeholder="Ex.: 20" />
         <NumField id="r3-c" label="C" value={vals.c} onChange={set("c")} placeholder="Ex.: 5" />
-        <span className="pb-3 text-sm text-muted-foreground">está para</span>
-        <NumField id="r3-d" label="X (D)" value={vals.d} onChange={set("d")} placeholder="?" />
+        {eq}
+        <div className="space-y-1.5">
+          <label htmlFor="r3-x" className="text-sm font-semibold">X (desconhecido)</label>
+          <input id="r3-x" readOnly tabIndex={-1} value={x} placeholder="?" aria-live="polite"
+            className="flex h-12 w-full rounded-md border border-primary/40 bg-primary/5 px-3 text-base font-bold text-foreground" />
+        </div>
       </div>
       <Actions onClear={clear} />
       <ErrorBox errors={errors} />
