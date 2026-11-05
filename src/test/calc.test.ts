@@ -49,3 +49,10 @@ describe("calculators", () => {
     expect(average([7, 8, 9])).toEqual({ sum: 24, count: 3, mean: 8 });
   });
 });
+
+describe("average (casos obrigatórios)", () => {
+  it("7, 8 e 9 = 8", () => expect(average([7, 8, 9]).mean).toBe(8));
+  it("10, 5 e 7,5 = 7,5", () => expect(average([10, 5, 7.5]).mean).toBe(7.5));
+  it("2, 4, 6 e 8 = 5", () => expect(average([2, 4, 6, 8]).mean).toBe(5));
+  it("-2, 2 e 4 ≈ 1,3333", () => expect(average([-2, 2, 4]).mean).toBeCloseTo(4 / 3));
+});
