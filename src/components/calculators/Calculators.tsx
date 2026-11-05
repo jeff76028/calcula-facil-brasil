@@ -111,7 +111,7 @@ export function RuleOfThreeCalculator() {
     const parsed = (["a", "b", "c"] as R3In[]).map((k) => parseNumber(vals[k], `O campo ${k.toUpperCase()}`));
     const errs = parsed.flatMap((r) => (r.ok ? [] : [r.error]));
     if (errs.length) { setErrors(errs); setX(""); return setRes(null); }
-    const [a, b, c] = parsed.map((r) => (r.ok ? r.value : 0));
+    const [a = 0, b = 0, c = 0] = parsed.map((r) => (r.ok ? r.value : 0));
     const r = ruleOfThree({ a, b, c });
     if (!r.ok) { setErrors(["O campo A não pode ser zero, pois não é possível dividir por zero."]); setX(""); return setRes(null); }
     setErrors([]);
