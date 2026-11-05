@@ -1,4 +1,5 @@
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
 import { PercentageCalculator, RuleOfThreeCalculator, DiscountCalculator, AverageCalculator } from "./Calculators";
 
 export interface ToolContent {
@@ -10,6 +11,7 @@ export interface ToolContent {
   formula: string[];
   example: string;
   faq: { q: string; a: string }[];
+  extra?: ReactNode;
 }
 
 export const calculators: Record<string, ToolContent> = {
@@ -58,12 +60,50 @@ export const calculators: Record<string, ToolContent> = {
   },
   "calculadora-de-media": {
     Component: AverageCalculator,
-    howTo: ["Digite cada número ou nota em um campo.", "Use \"Adicionar número\" para mais campos e a lixeira para remover.", "Clique em Calcular."],
-    formula: ["Média aritmética = soma dos valores ÷ quantidade de valores"],
-    example: "Notas 7, 8,5 e 6: soma = 21,5; quantidade = 3; média = 21,5 ÷ 3 ≈ 7,1667.",
+    seoTitle: "Calculadora de Média Online Grátis",
+    seoDescription: "Calcule a média aritmética de notas ou de qualquer lista de números. Veja a soma, a quantidade de valores e a conta passo a passo. Grátis e sem cadastro.",
+    intro: "A média aritmética é o valor que representa um conjunto de números de forma equilibrada: é o resultado que cada valor teria se todos fossem iguais. Ela é usada para calcular a nota final na escola, o gasto médio do mês, a temperatura média da semana e muito mais. Nesta calculadora você informa dois ou mais números e recebe a média, a soma e a quantidade de valores, com a explicação completa.",
+    howTo: [
+      "Digite um número em cada campo. Pode usar vírgula ou ponto para decimais e sinal de menos para negativos.",
+      "Clique em \"Adicionar número\" para incluir mais valores, ou na lixeira para remover um campo (mínimo de dois).",
+      "Clique em \"Calcular média\" para ver o resultado e o passo a passo.",
+      "Use \"Limpar\" para começar um novo cálculo.",
+    ],
+    formula: [
+      "Média = soma dos valores ÷ quantidade de valores",
+      "1º passo: some todos os números informados.",
+      "2º passo: conte quantos números foram informados.",
+      "3º passo: divida a soma pela quantidade.",
+    ],
+    example: "7, 8 e 9: soma = 24; quantidade = 3; média = 24 ÷ 3 = 8. Já 10, 5 e 7,5: soma = 22,5; média = 22,5 ÷ 3 = 7,5. Com 2, 4, 6 e 8: soma = 20; média = 20 ÷ 4 = 5. Com negativos, -2, 2 e 4: soma = 4; média = 4 ÷ 3 ≈ 1,3333.",
+    extra: (
+      <>
+        <h2>Como calcular a média de notas escolares</h2>
+        <p>
+          Quando todas as provas têm o mesmo peso, a média final é a média aritmética simples. Some as notas
+          do bimestre e divida pela quantidade de avaliações. Por exemplo, com notas 6,5, 8 e 7: soma = 21,5;
+          média = 21,5 ÷ 3 ≈ 7,17.
+        </p>
+        <h3>E se as provas tiverem pesos diferentes?</h3>
+        <p>
+          Nesse caso o cálculo correto é a média ponderada, que esta calculadora não faz. Confira as regras da
+          sua escola antes de usar o resultado.
+        </p>
+        <h2>Outras calculadoras úteis</h2>
+        <p>
+          Para comparar resultados em percentual, use a{" "}
+          <Link to="/ferramentas/$slug" params={{ slug: "calculadora-de-porcentagem" }}>Calculadora de Porcentagem</Link>.
+          Para descobrir valores proporcionais, use a{" "}
+          <Link to="/ferramentas/$slug" params={{ slug: "regra-de-tres" }}>Calculadora de Regra de Três</Link>.
+          Em compras, a <Link to="/ferramentas/$slug" params={{ slug: "calculadora-de-desconto" }}>Calculadora de Desconto</Link> mostra o preço final.
+        </p>
+      </>
+    ),
     faq: [
+      { q: "O que é média aritmética?", a: "É a soma de todos os valores dividida pela quantidade de valores. Todos os números têm o mesmo peso." },
       { q: "Esta calculadora faz média ponderada?", a: "Não. Ela calcula a média aritmética simples, em que todos os valores têm o mesmo peso." },
       { q: "Posso usar números negativos e decimais?", a: "Sim. Números negativos e decimais com vírgula ou ponto são aceitos." },
+      { q: "Por que preciso de pelo menos dois números?", a: "A média serve para resumir um conjunto de valores; com um único número, a média é o próprio número." },
       { q: "Quantos números posso adicionar?", a: "Quantos precisar. Clique em \"Adicionar número\" para cada novo valor." },
     ],
   },
