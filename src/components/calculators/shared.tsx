@@ -21,10 +21,10 @@ export function NumField({ id, label, value, onChange, placeholder, suffix, hint
   );
 }
 
-export function Actions({ onClear }: { onClear: () => void }) {
+export function Actions({ onClear, submitLabel = "Calcular" }: { onClear: () => void; submitLabel?: string }) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      <Button type="submit" size="lg" className="h-14 w-full text-lg font-bold">Calcular</Button>
+      <Button type="submit" size="lg" className="h-14 w-full text-lg font-bold">{submitLabel}</Button>
       <Button type="button" size="lg" variant="outline" className="h-14 w-full text-lg" onClick={onClear}>Limpar</Button>
     </div>
   );

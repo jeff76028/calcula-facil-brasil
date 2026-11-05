@@ -232,16 +232,25 @@ export function AverageCalculator() {
       if (p.ok) nums.push(p.value); else errs.push(p.error);
     });
     if (errs.length) errs.push("Preencha ou remova os campos indicados.");
+    else if (nums.length < 2) errs.push("Informe pelo menos dois valores válidos.");
     setErrors(errs);
     if (errs.length) return setRes(null);
     const r = average(nums);
+    const f = (n: number) => formatNumber(n, 4);
     setRes({
       items: [
-        { label: "Média aritmética", value: formatNumber(r.mean, 4), highlight: true },
-        { label: "Soma", value: formatNumber(r.sum, 4) },
-        { label: "Quantidade de valores", value: String(r.count) },
+        { label: "Média aritmética", value: f(r.mean), highlight: true },
+        { label: "Soma dos valores", value: f(r.sum) },
+        { label: "Quantidade de números", value: String(r.count) },
       ],
-      explanation: <>Cálculo: ({nums.map((n) => formatNumber(n, 4)).join(" + ")}) ÷ {r.count} = {formatNumber(r.sum, 4)} ÷ {r.count} = {formatNumber(r.mean, 4)}.</>,
+      explanation: (
+        <ol className="list-decimal space-y-1 pl-5">
+          <li>Fórmula: Média = soma dos valores ÷ quantidade de valores.</li>
+          <li>Soma: {nums.map((n) => (n < 0 ? `(${f(n)})` : f(n))).join(" + ")} = {f(r.sum)}.</li>
+          <li>Quantidade: {r.count} números.</li>
+          <li>Média: {f(r.sum)} ÷ {r.count} = <strong>{f(r.mean)}</strong>.</li>
+        </ol>
+      ),
     });
   }
   const clear = () => { setFields([newField(), newField(), newField()]); setErrors([]); setRes(null); };
@@ -255,7 +264,7 @@ export function AverageCalculator() {
               <NumField id={`media-${f.id}`} label={`Número ${i + 1}`} value={f.value} placeholder="Ex.: 7,5"
                 onChange={(v) => setFields((s) => s.map((x) => (x.id === f.id ? { ...x, value: v } : x)))} />
             </div>
-            <Button type="button" variant="ghost" size="icon" className="h-12 w-12" disabled={fields.length <= 1}
+            <Button type="button" variant="ghost" size="icon" className="h-12 w-12" disabled={fields.length <= 2}
               aria-label={`Remover número ${i + 1}`} onClick={() => setFields((s) => s.filter((x) => x.id !== f.id))}>
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -265,7 +274,7 @@ export function AverageCalculator() {
       <Button type="button" variant="secondary" onClick={() => setFields((s) => [...s, newField()])}>
         <Plus className="h-4 w-4" /> Adicionar número
       </Button>
-      <Actions onClear={clear} />
+      <Actions onClear={clear} submitLabel="Calcular média" />
       <ErrorBox errors={errors} />
       {res && <Results {...res} />}
     </form>

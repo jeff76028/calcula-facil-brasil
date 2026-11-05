@@ -120,6 +120,7 @@ function ToolPage() {
                 <ul>{calc.formula.map((s) => <li key={s}>{s}</li>)}</ul>
                 <h2>Exemplo de uso</h2>
                 <p>{calc.example}</p>
+                {calc.extra}
                 <h2>Perguntas frequentes</h2>
                 {calc.faq.map((f) => (
                   <div key={f.q}>
