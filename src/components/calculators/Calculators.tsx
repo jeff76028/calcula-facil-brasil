@@ -285,22 +285,23 @@ export function AverageCalculator() {
 type JcUnit = "mensal" | "anual";
 function GrowthChart({ series, unit }: { series: number[]; unit: JcUnit }) {
   const W = 600, H = 220, P = 8;
+  const first = series[0] ?? 0, last = series[series.length - 1] ?? 0;
   const max = Math.max(...series) || 1;
   const pts = series.map((v, k) => [P + (k / Math.max(series.length - 1, 1)) * (W - 2 * P), H - P - (v / max) * (H - 2 * P)]);
   const line = pts.map((p) => p.join(",")).join(" ");
-  const base = H - P - (series[0] / max) * (H - 2 * P);
+  const base = H - P - (first / max) * (H - 2 * P);
   const u = unit === "mensal" ? "mês" : "ano";
   return (
     <figure className="mt-4 rounded-xl bg-card p-4 shadow-card">
       <figcaption className="mb-2 text-sm font-semibold text-foreground">Evolução do montante</figcaption>
-      <svg viewBox={`0 0 ${W} ${H}`} className="h-48 w-full" role="img" aria-label={`Gráfico do montante de ${formatBRL(series[0])} até ${formatBRL(series[series.length - 1])}`}>
+      <svg viewBox={`0 0 ${W} ${H}`} className="h-48 w-full" role="img" aria-label={`Gráfico do montante de ${formatBRL(first)} até ${formatBRL(last)}`}>
         <polygon points={`${P},${H - P} ${line} ${W - P},${H - P}`} className="fill-primary/15" />
         <line x1={P} x2={W - P} y1={base} y2={base} className="stroke-muted-foreground" strokeDasharray="4 4" strokeWidth={1} />
         <polyline points={line} fill="none" className="stroke-primary" strokeWidth={3} strokeLinejoin="round" />
       </svg>
       <div className="mt-1 flex justify-between text-xs text-muted-foreground">
-        <span>Início: {formatBRL(series[0])}</span>
-        <span>{series.length - 1}º {u}: {formatBRL(series[series.length - 1])}</span>
+        <span>Início: {formatBRL(first)}</span>
+        <span>{series.length - 1}º {u}: {formatBRL(last)}</span>
       </div>
       <p className="mt-1 text-xs text-muted-foreground">Linha tracejada: capital inicial.</p>
     </figure>

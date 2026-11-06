@@ -86,6 +86,6 @@ export function average(nums: number[]) {
 export function compoundInterest(capital: number, ratePct: number, periods: number) {
   const i = ratePct / 100;
   const series = Array.from({ length: periods + 1 }, (_, k) => capital * Math.pow(1 + i, k));
-  const amount = series[periods];
+  const amount = capital * Math.pow(1 + i, periods);
   return { amount, interest: amount - capital, series };
 }
