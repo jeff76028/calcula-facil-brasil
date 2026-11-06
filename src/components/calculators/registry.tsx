@@ -107,4 +107,21 @@ export const calculators: Record<string, ToolContent> = {
       { q: "Quantos números posso adicionar?", a: "Quantos precisar. Clique em \"Adicionar número\" para cada novo valor." },
     ],
   },
+  "calculadora-de-juros-compostos": {
+    Component: CompoundInterestCalculator,
+    seoTitle: "Calculadora de Juros Compostos Online Grátis",
+    seoDescription: "Calcule o montante final de uma aplicação ou dívida com juros compostos. Taxa mensal ou anual, gráfico da evolução e cálculo passo a passo. Grátis.",
+    intro: "Juros compostos são os famosos juros sobre juros: a cada período, a taxa incide sobre o valor inicial somado aos juros já acumulados. É assim que crescem investimentos como poupança, CDB e Tesouro Direto, e também dívidas como o rotativo do cartão de crédito. Com esta calculadora, você informa o capital, a taxa e o período e descobre quanto o valor vai virar.",
+    howTo: ["Escolha a unidade: taxa mensal com período em meses, ou taxa anual com período em anos.", "Informe o valor inicial (capital) em reais.", "Informe a taxa de juros em % e o período (número inteiro). Vírgula ou ponto podem ser usados.", "Clique em Calcular para ver o montante, os juros, o gráfico e o passo a passo. Use Limpar para recomeçar."],
+    formula: ["M = C × (1 + i)^t", "M = montante final; C = capital inicial; i = taxa em decimal (ex.: 10% = 0,10); t = quantidade de períodos", "Juros acumulados: J = M − C", "Juros simples, para comparar: M = C × (1 + i × t). No regime simples, os juros incidem apenas sobre o capital inicial; nos compostos, sobre o saldo acumulado."],
+    example: "Exemplo 1: R$ 1.000 a 10% ao mês por 2 meses: M = 1.000 × 1,10² = 1.000 × 1,21 = R$ 1.210,00 (juros de R$ 210). Em juros simples seriam R$ 1.200, porque o segundo mês não renderia sobre os R$ 100 do primeiro. Exemplo 2: R$ 2.000 a 5% ao mês por 3 meses: M = 2.000 × 1,05³ = 2.000 × 1,157625 = R$ 2.315,25. Exemplo 3: R$ 1.000 com taxa zero por 12 meses continua R$ 1.000,00, pois (1 + 0)¹² = 1.",
+    faq: [
+      { q: "O que são juros compostos?", a: "É o regime em que os juros de cada período são somados ao saldo e passam a render juros também nos períodos seguintes." },
+      { q: "Qual a diferença entre juros simples e compostos?", a: "Nos juros simples, a taxa incide sempre sobre o capital inicial. Nos compostos, incide sobre o saldo acumulado, o que faz o valor crescer mais rápido com o tempo." },
+      { q: "Posso usar taxa anual com período em meses?", a: "Não diretamente. Taxa e período precisam estar na mesma unidade. Por isso a calculadora tem a opção taxa mensal/meses ou taxa anual/anos." },
+      { q: "A calculadora considera aportes mensais, impostos ou inflação?", a: "Não. Ela calcula apenas o crescimento de um valor inicial único com uma taxa fixa, sem aportes, impostos, taxas ou inflação." },
+      { q: "Meus dados ficam salvos?", a: "Não. O cálculo é feito no seu navegador e os valores digitados não são enviados nem armazenados." },
+    ],
+    extra: (<p>Veja também: <Link to="/ferramentas/$slug" params={{ slug: "calculadora-de-porcentagem" }} className="font-semibold text-primary underline">Calculadora de Porcentagem</Link> e <Link to="/ferramentas/$slug" params={{ slug: "calculadora-de-desconto" }} className="font-semibold text-primary underline">Calculadora de Desconto</Link>.</p>),
+  },
 };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseNumber, percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average } from "@/lib/calc";
+import { parseNumber, percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average, compoundInterest } from "@/lib/calc";
 
 const v = (s: string) => {
   const r = parseNumber(s);
@@ -57,7 +57,6 @@ describe("average (casos obrigatórios)", () => {
   it("-2, 2 e 4 ≈ 1,3333", () => expect(average([-2, 2, 4]).mean).toBeCloseTo(4 / 3));
 });
 
-import { compoundInterest } from "@/lib/calc";
 describe("compoundInterest", () => {
   it("1000 a 10% por 2 = 1210", () => expect(compoundInterest(1000, 10, 2).amount).toBeCloseTo(1210, 6));
   it("2000 a 5% por 3 = 2315,25", () => expect(compoundInterest(2000, 5, 3).amount).toBeCloseTo(2315.25, 6));
