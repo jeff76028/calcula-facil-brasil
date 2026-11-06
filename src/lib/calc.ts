@@ -81,3 +81,11 @@ export function average(nums: number[]) {
   const sum = nums.reduce((s, n) => s + n, 0);
   return { sum, count: nums.length, mean: nums.length ? sum / nums.length : NaN };
 }
+
+// Juros compostos: M = C × (1 + i)^t
+export function compoundInterest(capital: number, ratePct: number, periods: number) {
+  const i = ratePct / 100;
+  const series = Array.from({ length: periods + 1 }, (_, k) => capital * Math.pow(1 + i, k));
+  const amount = capital * Math.pow(1 + i, periods);
+  return { amount, interest: amount - capital, series };
+}
