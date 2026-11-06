@@ -89,3 +89,16 @@ export function compoundInterest(capital: number, ratePct: number, periods: numb
   const amount = capital * Math.pow(1 + i, periods);
   return { amount, interest: amount - capital, series };
 }
+
+// Taxa anual → mensal equivalente: (1 + i_anual)^(1/12) − 1 (em decimal)
+export const annualToMonthlyRate = (annual: number) => Math.pow(1 + annual, 1 / 12) - 1;
+
+// Investimento com aportes mensais no FINAL de cada mês:
+// M = C × (1+i)^n + PMT × [((1+i)^n − 1) / i]; com i = 0: M = C + PMT × n
+export function recurringInvestment(capital: number, pmt: number, i: number, n: number) {
+  const fv = (k: number) => (i === 0 ? capital + pmt * k : capital * Math.pow(1 + i, k) + pmt * ((Math.pow(1 + i, k) - 1) / i));
+  const series = Array.from({ length: n + 1 }, (_, k) => ({ invested: capital + pmt * k, total: fv(k) }));
+  const amount = fv(n);
+  const invested = capital + pmt * n;
+  return { amount, invested, contributions: pmt * n, interest: amount - invested, series };
+}
