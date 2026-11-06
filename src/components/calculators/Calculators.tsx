@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { NumField, Actions, ErrorBox, Results, ModeSwitch } from "./shared";
 import {
   parseNumber, formatNumber, formatBRL, formatPercent,
-  percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average, compoundInterest,
+  percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average, compoundInterest, recurringInvestment, annualToMonthlyRate,
 } from "@/lib/calc";
 
 type Res = { items: { label: string; value: string; highlight?: boolean }[]; explanation?: React.ReactNode } | null;
@@ -308,7 +308,7 @@ function GrowthChart({ series, unit }: { series: number[]; unit: JcUnit }) {
   );
 }
 
-export function CompoundInterestCalculator() {
+function SingleCompound() {
   const [unit, setUnit] = useState<JcUnit>("mensal");
   const [capital, setCapital] = useState("");
   const [rate, setRate] = useState("");
@@ -373,5 +373,136 @@ export function CompoundInterestCalculator() {
       {res && <Results {...res} />}
       {res && series && <GrowthChart series={series} unit={unit} />}
     </form>
+  );
+}
+
+/* Investimento recorrente (aportes mensais no fim de cada mês) */
+function StackedChart({ series }: { series: { invested: number; total: number }[] }) {
+  const W = 600, H = 220, P = 8;
+  const max = Math.max(...series.map((s) => Math.max(s.total, s.invested))) || 1;
+  const x = (k: number) => P + (k / Math.max(series.length - 1, 1)) * (W - 2 * P);
+  const y = (v: number) => H - P - (Math.max(v, 0) / max) * (H - 2 * P);
+  const inv = series.map((s, k) => `${x(k)},${y(s.invested)}`).join(" ");
+  const tot = series.map((s, k) => `${x(k)},${y(s.total)}`).join(" ");
+  const invRev = series.map((s, k) => `${x(k)},${y(s.invested)}`).reverse().join(" ");
+  const last = series[series.length - 1] ?? { invested: 0, total: 0 };
+  return (
+    <figure className="mt-4 rounded-xl bg-card p-4 shadow-card">
+      <figcaption className="mb-2 text-sm font-semibold text-foreground">Evolução do patrimônio</figcaption>
+      <svg viewBox={`0 0 ${W} ${H}`} className="h-48 w-full" role="img" aria-label={`Patrimônio final ${formatBRL(last.total)}, total investido ${formatBRL(last.invested)}`}>
+        <polygon points={`${P},${H - P} ${inv} ${W - P},${H - P}`} className="fill-muted-foreground/25" />
+        <polygon points={`${tot} ${invRev}`} className="fill-primary/30" />
+        <polyline points={tot} fill="none" className="stroke-primary" strokeWidth={3} strokeLinejoin="round" />
+      </svg>
+      <div className="mt-2 flex flex-wrap gap-4 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-muted-foreground/40" />Total investido: {formatBRL(last.invested)}</span>
+        <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm bg-primary/50" />Rendimentos: {formatBRL(last.total - last.invested)}</span>
+      </div>
+    </figure>
+  );
+}
+
+const moneyParse = (v: string, label: string) => parseNumber(/^\s*\d{1,3}(\.\d{3})+\s*$/.test(v) ? v.replace(/\./g, "") : v, label);
+
+function RecurringCompound() {
+  const [rateUnit, setRateUnit] = useState<JcUnit>("mensal");
+  const [termUnit, setTermUnit] = useState<"meses" | "anos">("meses");
+  const [capital, setCapital] = useState("");
+  const [pmt, setPmt] = useState("");
+  const [rate, setRate] = useState("");
+  const [term, setTerm] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
+  const [res, setRes] = useState<Res>(null);
+  const [series, setSeries] = useState<{ invested: number; total: number }[] | null>(null);
+  const reset = () => { setErrors([]); setRes(null); setSeries(null); };
+
+  function submit(e: FormEvent) {
+    e.preventDefault();
+    const c = moneyParse(capital, "O investimento inicial");
+    const p = moneyParse(pmt, "O aporte mensal");
+    const r = parseNumber(rate, "O campo taxa de rendimento");
+    const t = parseNumber(term, "O prazo");
+    const errs = [c, p, r, t].flatMap((x) => (x.ok ? [] : [x.error]));
+    if (c.ok && c.value < 0) errs.push("O investimento inicial não pode ser negativo (use 0 se não houver).");
+    if (p.ok && p.value < 0) errs.push("O aporte mensal não pode ser negativo.");
+    if (r.ok && r.value < 0) errs.push("A taxa de rendimento não pode ser negativa.");
+    if (t.ok && (!Number.isInteger(t.value) || t.value < 1)) errs.push(`O prazo deve ser um número inteiro de ${termUnit} maior que zero.`);
+    if (t.ok && t.value * (termUnit === "anos" ? 12 : 1) > 1200) errs.push("O prazo máximo é de 1.200 meses (100 anos).");
+    if (!errs.length && c.ok && p.ok && c.value === 0 && p.value === 0) errs.push("Informe um investimento inicial ou um aporte mensal maior que zero.");
+    setErrors(errs);
+    if (errs.length || !c.ok || !p.ok || !r.ok || !t.ok) { setSeries(null); return setRes(null); }
+    const C = c.value, PMT = p.value, R = r.value;
+    const n = t.value * (termUnit === "anos" ? 12 : 1);
+    const i = rateUnit === "anual" ? annualToMonthlyRate(R / 100) : R / 100;
+    const out = recurringInvestment(C, PMT, i, n);
+    if (!Number.isFinite(out.amount)) { setErrors(["O resultado é grande demais para ser calculado. Reduza a taxa ou o prazo."]); setSeries(null); return setRes(null); }
+    const f6 = (v: number) => formatNumber(v, 6);
+    setSeries(out.series);
+    setRes({
+      items: [
+        { label: "Patrimônio acumulado", value: formatBRL(out.amount), highlight: true },
+        { label: "Total investido", value: formatBRL(out.invested) },
+        { label: "Total de juros ganhos", value: formatBRL(out.interest) },
+        { label: "Capital inicial", value: formatBRL(C) },
+        { label: "Total de aportes", value: `${formatBRL(out.contributions)} (${n} × ${formatBRL(PMT)})` },
+        { label: "Prazo da simulação", value: `${n} ${n === 1 ? "mês" : "meses"}${termUnit === "anos" ? ` (${t.value} ${t.value === 1 ? "ano" : "anos"})` : ""}` },
+      ],
+      explanation: (
+        <ol className="list-decimal space-y-1 pl-5">
+          <li>Fórmula (aportes no final de cada mês): M = C × (1 + i)<sup>n</sup> + PMT × [((1 + i)<sup>n</sup> − 1) ÷ i].</li>
+          {rateUnit === "anual"
+            ? <li>Taxa mensal equivalente: i = (1 + {f6(R / 100)})<sup>1/12</sup> − 1 = {f6(i)} ({formatNumber(i * 100, 4)}% ao mês).</li>
+            : <li>Taxa mensal em decimal: i = {formatNumber(R, 4)} ÷ 100 = {f6(i)}.</li>}
+          <li>Prazo em meses: n = {n}.</li>
+          {i === 0
+            ? <li>Com taxa zero: M = C + PMT × n = {formatBRL(C)} + {formatBRL(PMT)} × {n} = <strong>{formatBRL(out.amount)}</strong>.</li>
+            : <>
+                <li>Capital inicial corrigido: {formatBRL(C)} × {f6(Math.pow(1 + i, n))} = {formatBRL(C * Math.pow(1 + i, n))}.</li>
+                <li>Aportes corrigidos: {formatBRL(PMT)} × {f6((Math.pow(1 + i, n) - 1) / i)} = {formatBRL(PMT * ((Math.pow(1 + i, n) - 1) / i))}.</li>
+                <li>Patrimônio: <strong>{formatBRL(out.amount)}</strong>. Juros: {formatBRL(out.amount)} − {formatBRL(out.invested)} = {formatBRL(out.interest)}.</li>
+              </>}
+        </ol>
+      ),
+    });
+  }
+  const clear = () => { setCapital(""); setPmt(""); setRate(""); setTerm(""); reset(); };
+
+  return (
+    <form onSubmit={submit} noValidate className="space-y-5">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <NumField id="jr-capital" label="Investimento inicial" value={capital} onChange={setCapital} placeholder="Ex.: 1.000 (ou 0)" suffix="R$" />
+        <NumField id="jr-aporte" label="Aporte mensal" value={pmt} onChange={setPmt} placeholder="Ex.: 300" suffix="R$" />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <ModeSwitch label="Unidade da taxa" value={rateUnit} onChange={(u) => { setRateUnit(u); reset(); }}
+            options={[{ value: "mensal", label: "Taxa mensal" }, { value: "anual", label: "Taxa anual" }]} />
+          <NumField id="jr-taxa" label={`Taxa de rendimento (${rateUnit === "mensal" ? "ao mês" : "ao ano"})`} value={rate} onChange={setRate} placeholder="Ex.: 1" suffix="%" />
+        </div>
+        <div className="space-y-2">
+          <ModeSwitch label="Unidade do prazo" value={termUnit} onChange={(u) => { setTermUnit(u); reset(); }}
+            options={[{ value: "meses", label: "Meses" }, { value: "anos", label: "Anos" }]} />
+          <NumField id="jr-prazo" label={`Prazo (em ${termUnit})`} value={term} onChange={setTerm} placeholder="Ex.: 12" suffix={termUnit} />
+        </div>
+      </div>
+      <p className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">
+        <strong className="text-foreground">Premissa:</strong> os aportes são feitos no <strong>final de cada mês</strong> e os juros são compostos mensalmente. Taxa anual é convertida para a mensal equivalente: (1 + taxa anual)<sup>1/12</sup> − 1.
+      </p>
+      <Actions onClear={clear} />
+      <ErrorBox errors={errors} />
+      {res && <Results {...res} />}
+      {res && series && <StackedChart series={series} />}
+    </form>
+  );
+}
+
+export function CompoundInterestCalculator() {
+  const [sim, setSim] = useState<"unico" | "recorrente">("unico");
+  return (
+    <div className="space-y-5">
+      <ModeSwitch label="Tipo de simulação" value={sim} onChange={setSim}
+        options={[{ value: "unico", label: "Investimento único" }, { value: "recorrente", label: "Com aportes mensais" }]} />
+      {sim === "unico" ? <SingleCompound /> : <RecurringCompound />}
+    </div>
   );
 }

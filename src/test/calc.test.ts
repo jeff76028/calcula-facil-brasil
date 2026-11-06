@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseNumber, percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average, compoundInterest } from "@/lib/calc";
+import { parseNumber, percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average, compoundInterest, recurringInvestment, annualToMonthlyRate } from "@/lib/calc";
 
 const v = (s: string) => {
   const r = parseNumber(s);
@@ -61,4 +61,16 @@ describe("compoundInterest", () => {
   it("1000 a 10% por 2 = 1210", () => expect(compoundInterest(1000, 10, 2).amount).toBeCloseTo(1210, 6));
   it("2000 a 5% por 3 = 2315,25", () => expect(compoundInterest(2000, 5, 3).amount).toBeCloseTo(2315.25, 6));
   it("taxa zero mantém 1000", () => { const r = compoundInterest(1000, 0, 12); expect(r.amount).toBe(1000); expect(r.interest).toBe(0); });
+});
+
+describe("recurringInvestment (aportes no fim do mês)", () => {
+  it("1000 + 300/mês a 1% por 12 meses", () => {
+    const r = recurringInvestment(1000, 300, 0.01, 12);
+    expect(r.invested).toBe(4600);
+    expect(r.amount).toBeCloseTo(4931.58, 2);
+    expect(r.interest).toBeCloseTo(331.58, 2);
+  });
+  it("taxa zero: C + PMT × n", () => expect(recurringInvestment(1000, 300, 0, 12).amount).toBe(4600));
+  it("capital zero", () => expect(recurringInvestment(0, 100, 0.01, 2).amount).toBeCloseTo(201, 6));
+  it("12% ao ano equivale a ~0,9489% ao mês", () => expect(annualToMonthlyRate(0.12)).toBeCloseTo(0.0094888, 6));
 });
