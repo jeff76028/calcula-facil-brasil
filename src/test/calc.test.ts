@@ -56,3 +56,10 @@ describe("average (casos obrigatórios)", () => {
   it("2, 4, 6 e 8 = 5", () => expect(average([2, 4, 6, 8]).mean).toBe(5));
   it("-2, 2 e 4 ≈ 1,3333", () => expect(average([-2, 2, 4]).mean).toBeCloseTo(4 / 3));
 });
+
+import { compoundInterest } from "@/lib/calc";
+describe("compoundInterest", () => {
+  it("1000 a 10% por 2 = 1210", () => expect(compoundInterest(1000, 10, 2).amount).toBeCloseTo(1210, 6));
+  it("2000 a 5% por 3 = 2315,25", () => expect(compoundInterest(2000, 5, 3).amount).toBeCloseTo(2315.25, 6));
+  it("taxa zero mantém 1000", () => { const r = compoundInterest(1000, 0, 12); expect(r.amount).toBe(1000); expect(r.interest).toBe(0); });
+});

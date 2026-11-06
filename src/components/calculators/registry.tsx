@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { PercentageCalculator, RuleOfThreeCalculator, DiscountCalculator, AverageCalculator } from "./Calculators";
+import { PercentageCalculator, RuleOfThreeCalculator, DiscountCalculator, AverageCalculator, CompoundInterestCalculator } from "./Calculators";
 
 export interface ToolContent {
   Component: ComponentType;

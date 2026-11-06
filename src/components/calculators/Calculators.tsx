@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { NumField, Actions, ErrorBox, Results, ModeSwitch } from "./shared";
 import {
   parseNumber, formatNumber, formatBRL, formatPercent,
-  percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average,
+  percentage, percentChange, ruleOfThree, discountFromPercent, percentFromFinal, average, compoundInterest,
 } from "@/lib/calc";
 
 type Res = { items: { label: string; value: string; highlight?: boolean }[]; explanation?: React.ReactNode } | null;
@@ -277,6 +277,99 @@ export function AverageCalculator() {
       <Actions onClear={clear} submitLabel="Calcular média" />
       <ErrorBox errors={errors} />
       {res && <Results {...res} />}
+    </form>
+  );
+}
+
+/* ---------- Juros compostos ---------- */
+type JcUnit = "mensal" | "anual";
+function GrowthChart({ series, unit }: { series: number[]; unit: JcUnit }) {
+  const W = 600, H = 220, P = 8;
+  const max = Math.max(...series) || 1;
+  const pts = series.map((v, k) => [P + (k / Math.max(series.length - 1, 1)) * (W - 2 * P), H - P - (v / max) * (H - 2 * P)]);
+  const line = pts.map((p) => p.join(",")).join(" ");
+  const base = H - P - (series[0] / max) * (H - 2 * P);
+  const u = unit === "mensal" ? "mês" : "ano";
+  return (
+    <figure className="mt-4 rounded-xl bg-card p-4 shadow-card">
+      <figcaption className="mb-2 text-sm font-semibold text-foreground">Evolução do montante</figcaption>
+      <svg viewBox={`0 0 ${W} ${H}`} className="h-48 w-full" role="img" aria-label={`Gráfico do montante de ${formatBRL(series[0])} até ${formatBRL(series[series.length - 1])}`}>
+        <polygon points={`${P},${H - P} ${line} ${W - P},${H - P}`} className="fill-primary/15" />
+        <line x1={P} x2={W - P} y1={base} y2={base} className="stroke-muted-foreground" strokeDasharray="4 4" strokeWidth={1} />
+        <polyline points={line} fill="none" className="stroke-primary" strokeWidth={3} strokeLinejoin="round" />
+      </svg>
+      <div className="mt-1 flex justify-between text-xs text-muted-foreground">
+        <span>Início: {formatBRL(series[0])}</span>
+        <span>{series.length - 1}º {u}: {formatBRL(series[series.length - 1])}</span>
+      </div>
+      <p className="mt-1 text-xs text-muted-foreground">Linha tracejada: capital inicial.</p>
+    </figure>
+  );
+}
+
+export function CompoundInterestCalculator() {
+  const [unit, setUnit] = useState<JcUnit>("mensal");
+  const [capital, setCapital] = useState("");
+  const [rate, setRate] = useState("");
+  const [periods, setPeriods] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
+  const [res, setRes] = useState<Res>(null);
+  const [series, setSeries] = useState<number[] | null>(null);
+  const uPl = unit === "mensal" ? "meses" : "anos";
+  const uRate = unit === "mensal" ? "ao mês" : "ao ano";
+
+  function submit(e: FormEvent) {
+    e.preventDefault();
+    const c = parseNumber(capital, "O capital inicial");
+    const r = parseNumber(rate, "A taxa de juros");
+    const t = parseNumber(periods, "O período");
+    const errs = [c, r, t].flatMap((x) => (x.ok ? [] : [x.error]));
+    if (c.ok && c.value < 0) errs.push("O capital inicial não pode ser negativo.");
+    if (r.ok && r.value < 0) errs.push("A taxa de juros não pode ser negativa.");
+    if (t.ok && (!Number.isInteger(t.value) || t.value < 1)) errs.push(`O período deve ser um número inteiro de ${uPl} maior que zero.`);
+    if (t.ok && t.value > 1200) errs.push(`O período máximo é de 1.200 ${uPl}.`);
+    setErrors(errs);
+    if (errs.length || !c.ok || !r.ok || !t.ok) { setSeries(null); return setRes(null); }
+    const C = c.value, R = r.value, T = t.value;
+    const out = compoundInterest(C, R, T);
+    if (!Number.isFinite(out.amount)) { setErrors(["O resultado é grande demais para ser calculado. Reduza a taxa ou o período."]); setSeries(null); return setRes(null); }
+    const i = R / 100;
+    setSeries(out.series);
+    setRes({
+      items: [
+        { label: "Montante final", value: formatBRL(out.amount), highlight: true },
+        { label: "Valor inicial", value: formatBRL(C) },
+        { label: "Total de juros", value: formatBRL(out.interest) },
+        { label: "Taxa utilizada", value: `${formatNumber(R, 4)}% ${uRate}` },
+        { label: "Período", value: `${T} ${T === 1 ? (unit === "mensal" ? "mês" : "ano") : uPl}` },
+      ],
+      explanation: (
+        <ol className="list-decimal space-y-1 pl-5">
+          <li>Fórmula: M = C × (1 + i)<sup>t</sup>.</li>
+          <li>Taxa em decimal: i = {formatNumber(R, 4)} ÷ 100 = {formatNumber(i, 6)}.</li>
+          <li>Substituindo: M = {formatBRL(C)} × (1 + {formatNumber(i, 6)})<sup>{T}</sup> = {formatBRL(C)} × {formatNumber(Math.pow(1 + i, T), 6)}.</li>
+          <li>Montante: <strong>{formatBRL(out.amount)}</strong>. Juros: {formatBRL(out.amount)} − {formatBRL(C)} = {formatBRL(out.interest)}.</li>
+        </ol>
+      ),
+    });
+  }
+  const clear = () => { setCapital(""); setRate(""); setPeriods(""); setErrors([]); setRes(null); setSeries(null); };
+  const changeUnit = (u: JcUnit) => { setUnit(u); setErrors([]); setRes(null); setSeries(null); };
+
+  return (
+    <form onSubmit={submit} noValidate className="space-y-5">
+      <ModeSwitch label="Unidade da taxa e do período" value={unit} onChange={changeUnit}
+        options={[{ value: "mensal", label: "Taxa mensal / meses" }, { value: "anual", label: "Taxa anual / anos" }]} />
+      <NumField id="jc-capital" label="Valor inicial (capital)" value={capital} onChange={setCapital} placeholder="Ex.: 1.000" suffix="R$" />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <NumField id="jc-taxa" label={`Taxa de juros (${uRate})`} value={rate} onChange={setRate} placeholder="Ex.: 1,5" suffix="%" />
+        <NumField id="jc-periodo" label={`Período (em ${uPl})`} value={periods} onChange={setPeriods} placeholder="Ex.: 12" suffix={uPl} />
+      </div>
+      <p className="text-xs text-muted-foreground">A taxa e o período usam sempre a mesma unidade ({uRate}, em {uPl}) para o cálculo ficar correto.</p>
+      <Actions onClear={clear} />
+      <ErrorBox errors={errors} />
+      {res && <Results {...res} />}
+      {res && series && <GrowthChart series={series} unit={unit} />}
     </form>
   );
 }
