@@ -320,8 +320,9 @@ export function CompoundInterestCalculator() {
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    const c = parseNumber(capital, "O capital inicial");
-    const r = parseNumber(rate, "A taxa de juros");
+    // Em reais, "1.000" é mil (ponto como separador de milhar).
+    const c = parseNumber(/^\s*\d{1,3}(\.\d{3})+\s*$/.test(capital) ? capital.replace(/\./g, "") : capital, "O capital inicial");
+    const r = parseNumber(rate, "O campo taxa de juros");
     const t = parseNumber(periods, "O período");
     const errs = [c, r, t].flatMap((x) => (x.ok ? [] : [x.error]));
     if (c.ok && c.value < 0) errs.push("O capital inicial não pode ser negativo.");
