@@ -84,3 +84,21 @@ describe("roomsArea", () => {
     expect(r.areas).toEqual([12, 11]); expect(r.total).toBe(23); expect(r.count).toBe(2);
   });
 });
+
+import { tilesNeeded } from "@/lib/calc";
+describe("tilesNeeded", () => {
+  it("4×3 m, 60×60 cm, 10% → 37 peças", () => {
+    const r = tilesNeeded(4, 3, 60, 60, 10);
+    expect(r.roomArea).toBe(12);
+    expect(r.tileArea).toBeCloseTo(0.36);
+    expect(r.totalArea).toBeCloseTo(13.2);
+    expect(r.pieces).toBe(37);
+  });
+  it("divisão exata não arredonda a mais: 3×3 m, 50×50 cm, 0% → 36", () => {
+    expect(tilesNeeded(3, 3, 50, 50, 0).pieces).toBe(36);
+  });
+  it("5% e 15%", () => {
+    expect(tilesNeeded(4, 3, 60, 60, 5).pieces).toBe(35);
+    expect(tilesNeeded(4, 3, 60, 60, 15).pieces).toBe(39);
+  });
+});

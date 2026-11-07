@@ -2,6 +2,7 @@ import type { ComponentType, ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { PercentageCalculator, RuleOfThreeCalculator, DiscountCalculator, AverageCalculator, CompoundInterestCalculator } from "./Calculators";
 import { AreaCalculator } from "./AreaCalculator";
+import { TileCalculator } from "./TileCalculator";
 
 export interface ToolContent {
   Component: ComponentType;
@@ -140,5 +141,23 @@ export const calculators: Record<string, ToolContent> = {
       { q: "Por que não posso informar zero ou valores negativos?", a: "Uma medida real de comprimento ou largura é sempre maior que zero." },
       { q: "Meus dados ficam salvos?", a: "Não. O cálculo é feito no seu navegador e nada é enviado ou armazenado." },
     ],
+  },
+  "quantidade-de-pisos": {
+    Component: TileCalculator,
+    seoTitle: "Calculadora de Piso Online Grátis: Quantas Peças Comprar",
+    seoDescription: "Descubra quantas peças de piso ou porcelanato comprar: informe as medidas do ambiente e da peça, escolha a sobra de 5%, 10% ou 15% e veja o resultado. Grátis.",
+    intro: "Antes de comprar piso, porcelanato ou revestimento, é preciso saber quantas peças cobrem o ambiente. Esta calculadora usa as medidas do cômodo, o tamanho da peça e uma margem de sobra para cortes e quebras, e mostra a quantidade estimada de peças, sempre arredondada para cima.",
+    howTo: ["Meça o comprimento e a largura do ambiente em metros.", "Veja na embalagem ou na loja o comprimento e a largura da peça em centímetros (ex.: 60 × 60 cm).", "Escolha a margem de sobra: 5%, 10% (padrão) ou 15%.", "Clique em Calcular para ver a área, a área com sobra e a quantidade de peças. Use Limpar para recomeçar."],
+    formula: ["Área do ambiente (m²) = comprimento (m) × largura (m)", "Área da peça (m²) = (comprimento da peça ÷ 100) × (largura da peça ÷ 100)", "Área total com sobra = área do ambiente × (1 + sobra ÷ 100)", "Quantidade de peças = área total com sobra ÷ área da peça, arredondada para cima"],
+    example: "Um quarto de 4 m × 3 m tem 12 m². Uma peça de 60 × 60 cm tem 0,6 × 0,6 = 0,36 m². Com 10% de sobra, a área necessária é 12 × 1,10 = 13,2 m². Dividindo: 13,2 ÷ 0,36 = 36,67, arredondado para cima = 37 peças.",
+    faq: [
+      { q: "Por que adicionar uma margem de sobra?", a: "Parte das peças é cortada nos cantos e bordas, e algumas podem quebrar no transporte ou na instalação. A sobra evita faltar material e ajuda a ter peças do mesmo lote para reparos futuros." },
+      { q: "Qual margem de sobra escolher?", a: "10% é a margem mais usada para ambientes comuns. 5% pode servir para cômodos simples e retangulares com peças pequenas; 15% é indicado para ambientes com muitos recortes, peças grandes ou assentamento diagonal. Confirme com o profissional que fará a instalação." },
+      { q: "Por que a quantidade é arredondada para cima?", a: "Não é possível comprar uma fração de peça. Se o cálculo der 36,67, são necessárias 37 peças para cobrir toda a área." },
+      { q: "A calculadora calcula caixas?", a: "Não. Esta versão mostra a quantidade de peças individuais. Para saber o número de caixas, confira na embalagem quantas peças vêm em cada caixa." },
+      { q: "A calculadora considera o rejunte?", a: "Não. O espaço do rejunte é pequeno e não é descontado; a margem de sobra já cobre essa diferença na prática." },
+      { q: "Meus dados ficam salvos?", a: "Não. O cálculo é feito no seu navegador e nada é enviado ou armazenado." },
+    ],
+    extra: (<p>Veja também: <Link to="/ferramentas/$slug" params={{ slug: "calculadora-de-area" }} className="font-semibold text-primary underline">Calculadora de Área em m²</Link>.</p>),
   },
 };
