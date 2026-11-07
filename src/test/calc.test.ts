@@ -74,3 +74,13 @@ describe("recurringInvestment (aportes no fim do mês)", () => {
   it("capital zero", () => expect(recurringInvestment(0, 100, 0.01, 2).amount).toBeCloseTo(201, 6));
   it("12% ao ano equivale a ~0,9489% ao mês", () => expect(annualToMonthlyRate(0.12)).toBeCloseTo(0.0094888, 6));
 });
+
+import { roomsArea } from "@/lib/calc";
+describe("roomsArea", () => {
+  it("4 × 3 = 12 m²", () => expect(roomsArea([{ length: 4, width: 3 }]).total).toBe(12));
+  it("5,5 × 2 = 11 m²", () => expect(roomsArea([{ length: 5.5, width: 2 }]).total).toBe(11));
+  it("soma vários ambientes", () => {
+    const r = roomsArea([{ length: 4, width: 3 }, { length: 5.5, width: 2 }]);
+    expect(r.areas).toEqual([12, 11]); expect(r.total).toBe(23); expect(r.count).toBe(2);
+  });
+});
