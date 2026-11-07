@@ -1,6 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { PercentageCalculator, RuleOfThreeCalculator, DiscountCalculator, AverageCalculator, CompoundInterestCalculator } from "./Calculators";
+import { AreaCalculator } from "./AreaCalculator";
 
 export interface ToolContent {
   Component: ComponentType;
@@ -123,5 +124,21 @@ export const calculators: Record<string, ToolContent> = {
       { q: "Meus dados ficam salvos?", a: "Não. O cálculo é feito no seu navegador e os valores digitados não são enviados nem armazenados." },
     ],
     extra: (<p>Veja também: <Link to="/ferramentas/$slug" params={{ slug: "calculadora-de-porcentagem" }} className="font-semibold text-primary underline">Calculadora de Porcentagem</Link> e <Link to="/ferramentas/$slug" params={{ slug: "calculadora-de-desconto" }} className="font-semibold text-primary underline">Calculadora de Desconto</Link>.</p>),
+  },
+  "calculadora-de-area": {
+    Component: AreaCalculator,
+    seoTitle: "Calculadora de Área em m² Online Grátis",
+    seoDescription: "Calcule a área em metros quadrados de um ou vários cômodos: informe comprimento e largura e veja a área de cada ambiente e o total. Grátis.",
+    intro: "Saber a área em metros quadrados (m²) é o primeiro passo para comprar piso, tinta, rodapé ou orçar uma reforma. Nesta calculadora você informa o comprimento e a largura de cada cômodo retangular e vê a área de cada um e a soma de todos.",
+    howTo: ["Meça o comprimento e a largura do ambiente em metros.", "Digite as medidas nos campos. Dê um nome ao ambiente se quiser (ex.: Sala).", "Clique em Adicionar ambiente para incluir outros cômodos.", "Clique em Calcular área para ver a área de cada ambiente, o total e a quantidade de ambientes. Use Limpar para recomeçar."],
+    formula: ["Área (m²) = Comprimento (m) × Largura (m)", "Área total = soma das áreas de todos os ambientes", "As medidas precisam estar em metros. Para converter centímetros, divida por 100 (ex.: 350 cm = 3,5 m)."],
+    example: "Um quarto de 4 m × 3 m tem 4 × 3 = 12 m². Uma cozinha de 5,5 m × 2 m tem 5,5 × 2 = 11 m². Juntos, os dois ambientes somam 12 + 11 = 23 m².",
+    faq: [
+      { q: "Como calcular metros quadrados?", a: "Multiplique o comprimento pela largura, ambos em metros. Um cômodo de 4 m por 3 m tem 12 m²." },
+      { q: "E se o cômodo não for retangular?", a: "Divida o ambiente em partes retangulares, adicione cada parte como um ambiente e use a área total." },
+      { q: "Posso usar vírgula ou ponto?", a: "Sim. 5,5 e 5.5 são aceitos da mesma forma." },
+      { q: "Por que não posso informar zero ou valores negativos?", a: "Uma medida real de comprimento ou largura é sempre maior que zero." },
+      { q: "Meus dados ficam salvos?", a: "Não. O cálculo é feito no seu navegador e nada é enviado ou armazenado." },
+    ],
   },
 };

@@ -102,3 +102,9 @@ export function recurringInvestment(capital: number, pmt: number, i: number, n: 
   const invested = capital + pmt * n;
   return { amount, invested, contributions: pmt * n, interest: amount - invested, series };
 }
+
+/** Área de ambientes retangulares: área = comprimento × largura. */
+export function roomsArea(rooms: { length: number; width: number }[]) {
+  const areas = rooms.map((r) => r.length * r.width);
+  return { areas, total: areas.reduce((s, a) => s + a, 0), count: areas.length };
+}
