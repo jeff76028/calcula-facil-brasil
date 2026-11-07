@@ -108,3 +108,13 @@ export function roomsArea(rooms: { length: number; width: number }[]) {
   const areas = rooms.map((r) => r.length * r.width);
   return { areas, total: areas.reduce((s, a) => s + a, 0), count: areas.length };
 }
+
+/** Quantidade de piso: peças = ⌈(área × (1 + sobra%)) ÷ área da peça⌉. Peça em cm. */
+export function tilesNeeded(roomL: number, roomW: number, tileLcm: number, tileWcm: number, wastePct: number) {
+  const roomArea = roomL * roomW;
+  const tileArea = (tileLcm / 100) * (tileWcm / 100);
+  const totalArea = roomArea * (1 + wastePct / 100);
+  // arredonda para evitar erro de ponto flutuante (ex.: 13,2/0,36 = 36,666…; 13,2000000001)
+  const raw = Math.round((totalArea / tileArea) * 1e9) / 1e9;
+  return { roomArea, tileArea, totalArea, pieces: Math.ceil(raw) };
+}
