@@ -26,7 +26,7 @@ export function AreaCalculator() {
       const l = parseNumber(r.length, `O comprimento de "${n}"`);
       const w = parseNumber(r.width, `A largura de "${n}"`);
       if (!l.ok) errs.push(l.error); else if (l.value <= 0) errs.push(`O comprimento de "${n}" deve ser maior que zero.`);
-      if (!w.ok) errs.push(w.error); else if (w.value <= 0) errs.push(`A largura de "${n}" deve ser maior que zero.`);
+      if (!w.ok) errs.push(w.error.replace("está vazio", "está vazia")); else if (w.value <= 0) errs.push(`A largura de "${n}" deve ser maior que zero.`);
       if (l.ok && w.ok) vals.push({ length: l.value, width: w.value });
     });
     setErrors(errs);
