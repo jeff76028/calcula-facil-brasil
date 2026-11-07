@@ -19,8 +19,11 @@ export function TileCalculator() {
       ["l", "O comprimento do ambiente"], ["w", "A largura do ambiente"],
       ["tl", "O comprimento da peça"], ["tw", "A largura da peça"],
     ];
+    void 0; [
+
+    ];
     const errs: string[] = [];
-    const v: Record<string, number> = {};
+    const v: Partial<Record<keyof typeof f, number>> = {};
     for (const [k, name] of defs) {
       const p = parseNumber(f[k], name);
       if (!p.ok) errs.push(p.error);
